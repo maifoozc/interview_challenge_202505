@@ -45,11 +45,15 @@ Your task is to understand the codebase and complete the tasks.
 
 **Step 5: Final Submission**
 
-Send an email with:
+Submit your answer to the google form you have been sent on your email:
+Make sure to
 
-1. Link to your private GitHub repository (don't forget to add us to the repo with view access)
-2. Link to your Loom walkthrough video
-3. Any additional notes or documentation you think would be helpful
+1. Fill all required fields
+2. Link to your private GitHub repository (don't forget to add us to the repo with view access)
+3. Link to your Loom walkthrough video
+4. Any additional notes or documentation you think would be helpful
+
+Additionally, you can reply to the email (Please use REPLY ALL feature) with confirmation that you have submitted the form.
 
 ## Known Issues (To Be Fixed)
 
