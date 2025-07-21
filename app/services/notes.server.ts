@@ -1,5 +1,5 @@
 import { db, notes, type Note, type NewNote } from "~/db/schema";
-import { sql } from "drizzle-orm";
+import {count, eq, sql} from "drizzle-orm";
 
 export async function createNote(data: NewNote): Promise<Note> {
   const [note] = await db.insert(notes).values(data).returning();
@@ -16,16 +16,30 @@ export async function getNoteById(id: number): Promise<Note | null> {
 
 export async function getNotesByUserId(
   userId: number,
-  { limit = 10 }: { limit?: number } = {}
-): Promise<{ notes: Note[] }> {
+  { page = 1, perPage = 10 }: { page?: number; perPage?: number } = {}
+  // { limit = 10 }: { limit?: number } = {}
+): Promise<{
+    notes: Note[],
+    totalCount: number;
+    totalPages: number;
+    currentPage: number; }> {
   const notesList = await db
     .select()
     .from(notes)
     .where(sql`${notes.userId} = ${userId}`)
-    .limit(limit);
+    // .limit(limit);
+      .limit(perPage)
+      .offset((page - 1) * perPage);
 
+    const totalResult = await db
+        .select({ count: count() })
+        .from(notes)
+        .where(eq(notes.userId, userId));
   return {
     notes: notesList,
+      totalCount: totalResult[0].count,
+      totalPages: Math.ceil(totalResult[0].count / perPage),
+      currentPage: page,
   };
 }
 

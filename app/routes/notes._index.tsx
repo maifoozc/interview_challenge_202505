@@ -3,7 +3,7 @@ import {
   type LoaderFunctionArgs,
   type ActionFunctionArgs,
 } from "@remix-run/node";
-import { useLoaderData, useNavigation } from "@remix-run/react";
+import {useLoaderData, useNavigate, useNavigation} from "@remix-run/react";
 import { Button } from "~/components/ui/button";
 import { NotesGrid } from "~/components/notes/notes-grid";
 import { NoteForm } from "~/components/notes/note-form";
@@ -29,8 +29,15 @@ import { NotesGridSkeleton } from "~/components/notes/note-skeleton";
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const userId = await requireUserId(request);
-  const { notes } = await getNotesByUserId(userId);
-  return json({ notes });
+
+  const url = new URL(request.url);
+  const page = Number(url.searchParams.get('page')) || 1;
+  const { notes, totalCount, totalPages, currentPage } = await getNotesByUserId(userId, { page });
+
+  // const { notes } = await getNotesByUserId(userId);
+  // return json({ notes });
+
+  return json({ notes, totalCount, totalPages, currentPage });
 }
 
 export async function action({ request }: ActionFunctionArgs) {
@@ -72,11 +79,19 @@ export async function action({ request }: ActionFunctionArgs) {
 }
 
 export default function NotesIndexPage() {
-  const { notes } = useLoaderData<typeof loader>();
+  // const { notes } = useLoaderData<typeof loader>();
+  const { notes, totalCount, totalPages, currentPage } = useLoaderData<typeof loader>();
   const [isOpen, setIsOpen] = useState(false);
   const navigation = useNavigation();
   const isLoading = navigation.state === "loading";
   // Reset the success handled flag when navigation change
+
+  const navigate = useNavigate();
+  function handlePageChange(newPage: number) {
+    if (newPage >= 1 && newPage <= totalPages) {
+      navigate(`?page=${newPage}`);
+    }
+  }
   return (
     <div className="h-full min-h-screen bg-background">
       <div className="container px-4 py-10 sm:px-6 lg:px-8 lg:py-12">
@@ -134,7 +149,9 @@ export default function NotesIndexPage() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              {isLoading ? <NotesGridSkeleton /> : <NotesGrid notes={notes} />}
+              {isLoading ? <NotesGridSkeleton /> : <NotesGrid notes={notes} currentPage={currentPage}
+                                                              totalPages={totalPages}
+                                                              onPageChange={handlePageChange} />}
             </CardContent>
           </Card>
         </div>
