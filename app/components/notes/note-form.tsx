@@ -8,10 +8,12 @@ import { type NoteForm } from "~/schemas/notes";
 
 interface NoteFormProps {
   defaultValues?: Partial<NoteForm>;
-  onSuccess?: () => void;
+  // onSuccess?: () => void;
 }
 
-export function NoteForm({ defaultValues = {}, onSuccess }: NoteFormProps) {
+export function NoteForm({ defaultValues = {},
+                             // onSuccess
+}: NoteFormProps) {
   const actionData = useActionData<{
     success: boolean;
     errors?: Record<string, string[]>;
@@ -24,9 +26,11 @@ export function NoteForm({ defaultValues = {}, onSuccess }: NoteFormProps) {
   useEffect(() => {
     if (actionData?.success) {
       formRef.current?.reset();
-      onSuccess?.();
+      // onSuccess?.();
     }
-  }, [actionData?.success, onSuccess]);
+  }, [actionData?.success,
+      // onSuccess
+  ]);
 
   return (
     <Form ref={formRef} method="post" className="space-y-4">

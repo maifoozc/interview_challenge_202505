@@ -133,9 +133,9 @@ export default function NotesIndexPage() {
               </CardHeader>
               <CardContent>
                 <NoteForm
-                  onSuccess={() => {
-                    setIsOpen(false);
-                  }}
+                  // onSuccess={() => {
+                  //   setIsOpen(false);
+                  // }}
                 />
               </CardContent>
             </Card>
