@@ -9,6 +9,7 @@ export const noteSchema = z.object({
     .string()
     .min(1, "Description is required")
     .max(10000, "Description must be less than 10000 characters"),
+  isFavorite: z.boolean().optional(),
 });
 
 export const noteUpdateSchema = noteSchema.partial();

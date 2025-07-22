@@ -1,5 +1,5 @@
 import { db, notes, type Note, type NewNote } from "~/db/schema";
-import {count, eq, sql} from "drizzle-orm";
+import {count, desc, eq, sql} from "drizzle-orm";
 
 export async function createNote(data: NewNote): Promise<Note> {
   const [note] = await db.insert(notes).values(data).returning();
@@ -27,6 +27,7 @@ export async function getNotesByUserId(
     .select()
     .from(notes)
     .where(sql`${notes.userId} = ${userId}`)
+      .orderBy(desc(notes.isFavorite), desc(notes.createdAt))
     // .limit(limit);
       .limit(perPage)
       .offset((page - 1) * perPage);
@@ -62,4 +63,15 @@ export async function deleteNote(id: number, userId: number): Promise<boolean> {
     .where(sql`${notes.id} = ${id} AND ${notes.userId} = ${userId}`)
     .returning();
   return !!note;
+}
+
+export async function updateFavoriteStatus(
+    noteId: number,
+    userId: number,
+    isFavorite: boolean
+): Promise<void> {
+    await db
+        .update(notes)
+        .set({ isFavorite })
+        .where(sql`${notes.id} = ${noteId} AND ${notes.userId} = ${userId}`);
 }
